@@ -11,8 +11,8 @@ import model.Show;
 public class Main {
     public static void main(String[] args) throws Exception {
     
-        List<Genero> generos = Genero.getGenero();
-        List<Local> locais = Local.getLocal();
+        List<Genero> generos = Genero.getGeneros();
+        List<Local> locais = Local.getLocais();
 
         int opcao = -1;
         do {
@@ -25,7 +25,7 @@ public class Main {
                     // Pesquisar shows por gênero
                     break;
                 case 3:
-                    menuCadastro(); // Abre o menu de cadastro
+                    menuCadastro(); 
                     break;
                 case 0:
                     JOptionPane.showMessageDialog(null, "Saindo do programa.");
@@ -38,22 +38,11 @@ public class Main {
     }
 
     public static void mostrarTodosOsShows() {
-        List<Show> shows = Show.getShows();
-        if (shows.isEmpty()) {
+        String listaShows = Show.montarStringShows(); // Obtém a lista formatada de shows
+        if (listaShows.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Não há shows cadastrados.");
         } else {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Lista de Shows:\n");
-            for (Show show : shows) {
-                sb.append("ID: ").append(show.id)
-                  .append(", Nome: ").append(show.nome)
-                  .append(", Data: ").append(show.data)
-                  .append(", Gênero: ").append(show.genero)
-                  .append(", Local: ").append(show.local)
-                  .append(", Link: ").append(show.link)
-                  .append("\n");
-            }
-            JOptionPane.showMessageDialog(null, sb.toString());
+            JOptionPane.showMessageDialog(null, listaShows);
         }
     }
 
@@ -82,8 +71,7 @@ public class Main {
                     Show.cadastrarShow();
                     break;
                 case 2:
-                    // Cadastrar gênero
-                    // Exemplo: cadastrarGenero();
+                    cadastrarGenero();
                     break;
                 case 3:
                     cadastrarLocal();
@@ -118,6 +106,13 @@ public class Main {
         String nomeLocal = Local.verificarOuCadastrar();
         if (nomeLocal != null && !nomeLocal.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Local cadastrado: " + nomeLocal);
+        }
+    }
+
+    public static void cadastrarGenero() {
+        String nomeGenero = Genero.verificarOuCadastrar();
+        if (nomeGenero != null && !nomeGenero.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Genero cadastrado: " + nomeGenero);
         }
     }
 }

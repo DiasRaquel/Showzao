@@ -16,51 +16,58 @@ public class Local {
     public int id;
     public String nome;
 
-    //Construtos que nao recebe nenhum parametro
-    public Local(){}
+    // Construtor vazio
+    public Local() {}
 
-    //Metodo Construtor que recebe dois parametros
-    public Local(int id,String nome){
+    // Construtor com todos os argumentos
+    public Local(int id, String nome) {
         this.id = id;
         this.nome = nome;
     }
 
-    public static void cadastrar(String nome) {
+    // Método para cadastrar um local e retornar o ID gerado
+    private static int cadastrar(String nome) {
         String sql = "INSERT INTO local (nome) VALUES (?)";
         try (Connection conn = Conexao.getConexao();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, nome);
             ps.executeUpdate();
+
+            // Obtém o ID gerado automaticamente
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1); // Retorna o ID do local cadastrado
+            }
             JOptionPane.showMessageDialog(null, "Local cadastrado com sucesso!");
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Erro ao cadastrar local: " + e.getMessage());
         }
+        return -1; // Retorna -1 se ocorrer algum erro
     }
 
-    public static List<Local> getLocal(){
-        List<Local> lista = new ArrayList<Local>();
+    // Método para obter a lista de locais
+    public static List<Local> getLocais() {
+        List<Local> lista = new ArrayList<>();
         String sql = "SELECT id, nome FROM local ORDER BY nome";
-        PreparedStatement ps = null;
-        try {
-            Connection conn = Conexao.getConexao();
-            ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            if( rs != null){
-                while ( rs.next()) {
-                    Local local = new Local();
-                    local.id = rs.getInt(1);
-                    local.nome = rs.getString(2);
-                    lista.add(local);
-                }
+        try (Connection conn = Conexao.getConexao();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Local local = new Local();
+                local.id = rs.getInt("id");
+                local.nome = rs.getString("nome");
+                lista.add(local);
             }
-            //Conexao.fecharConn( conn );
+
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e.toString());
+            JOptionPane.showMessageDialog(null, "Erro ao obter locais: " + e.getMessage());
         }
         return lista;
     }
+
     public static String verificarOuCadastrar() {
-        List<String> locais = obterNomesLocais();
+        List<Local> locais = getLocais();
     
         if (locais.isEmpty()) {
             int opcaoCadastro = JOptionPane.showConfirmDialog(null,
@@ -70,8 +77,8 @@ public class Local {
             if (opcaoCadastro == JOptionPane.YES_OPTION) {
                 String nomeLocal = JOptionPane.showInputDialog("Digite o nome do novo local:");
                 if (nomeLocal != null && !nomeLocal.isEmpty()) {
-                    cadastrar(nomeLocal); // Cadastra o novo local
-                    return nomeLocal; // Retorna o nome do local cadastrado
+                    int idLocal = cadastrar(nomeLocal); // Cadastra o novo local e retorna o ID
+                    return String.valueOf(idLocal); // Retorna o ID do local cadastrado como String
                 } else {
                     JOptionPane.showMessageDialog(null, "Nome do local não pode ser vazio.");
                     return null; // Retorna null se o nome do local for vazio
@@ -82,10 +89,43 @@ public class Local {
             }
         } else {
             // Usuário escolhe o local existente
-            return escolherLocal();
+            Local escolhido = escolherLocal(locais);
+            if (escolhido != null) {
+                return String.valueOf(escolhido.id); // Retorna o ID do local escolhido como String
+            } else {
+                return null; // Retorna null se o usuário cancelar a escolha
+            }
         }
     }
 
+    // Método para escolher um local existente
+    private static Local escolherLocal(List<Local> locais) {
+        if (locais.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Não há locais cadastrados.");
+            return null; // Retorna null se não houver locais cadastrados
+        }
+
+        String[] opcoes = locais.stream().map(l -> l.nome).toArray(String[]::new);
+
+        String escolha = (String) JOptionPane.showInputDialog(null,
+                "Escolha um local:",
+                "Escolha de Local",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opcoes,
+                opcoes[0]);
+
+        // Encontra o local escolhido
+        for (Local local : locais) {
+            if (local.nome.equalsIgnoreCase(escolha)) {
+                return local; // Retorna o local escolhido
+            }
+        }
+
+        return null; // Retorna null se o usuário cancelar a escolha
+    }
+
+    // Método para obter a lista de nomes de locais
     public static List<String> obterNomesLocais() {
         List<String> lista = new ArrayList<>();
         String sql = "SELECT nome FROM local ORDER BY nome";
@@ -101,26 +141,5 @@ public class Local {
             JOptionPane.showMessageDialog(null, "Erro ao obter locais: " + e.getMessage());
         }
         return lista;
-    }
-
-    private static String escolherLocal() {
-        List<String> locais = obterNomesLocais();
-    
-        if (locais.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Não há locais cadastrados.");
-            return null; // Retorna null se não houver locais cadastrados
-        }
-    
-        String[] opcoes = locais.toArray(new String[0]);
-        
-        String escolha = (String) JOptionPane.showInputDialog(null,
-                "Escolha um local:",
-                "Escolha de Local",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opcoes,
-                opcoes[0]);
-    
-        return escolha;
     }
 }

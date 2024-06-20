@@ -16,82 +16,130 @@ public class Genero {
     public int id;
     public String nome;
 
-    //Contrutor que nao precisa de nenhum parametro
-    public Genero(){}
+    // Construtor vazio
+    public Genero() {}
 
-    //Metodo Construtor que recebe dois parametros
-    public Genero(int id,String nome){
+    // Construtor com todos os argumentos
+    public Genero(int id, String nome) {
         this.id = id;
         this.nome = nome;
     }
 
-    public static void cadastrar(String nome){
-        String sql = "INSERT INTO genero (nome) VALUES ( ? )";
-        PreparedStatement ps = null;
-
-        try {
-            Connection conn = Conexao.getConexao();
-            ps = conn.prepareStatement(sql);
+    // Método para cadastrar um gênero e retornar o ID gerado
+    private static int cadastrar(String nome) {
+        String sql = "INSERT INTO genero (nome) VALUES (?)";
+        try (Connection conn = Conexao.getConexao();
+             PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, nome);
-            ps.execute();
-            //Conexao.fecharConn( conn );
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e.toString());
-                }
-        }
+            ps.executeUpdate();
 
-    public static void editar(Genero genero){
-        String sql = "UPDATE genero SET nome = ( ? ) WHERE id = ?";
-        PreparedStatement ps = null;
-
-        try {
-            Connection conn = Conexao.getConexao();
-            ps = conn.prepareStatement(sql);
-            ps.setInt(2, genero.id);
-            ps.execute();
-            //Conexao.fecharConn( conn );
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e.toString());
-        }
-    }
-
-    public static void excluir(int idGenero){
-        String sql = "DELETE FROM genero WHERE id = ?";
-        PreparedStatement ps = null;
-
-        try {
-            Connection conn = Conexao.getConexao();
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1, idGenero);
-            ps.execute();
-            //Conexao.fecharConn( conn );
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e.toString());
-        }
-    }
-
-    public static List<Genero> getGenero(){
-        List<Genero> lista = new ArrayList<Genero>();
-        String sql = "SELECT id, nome FROM genero ORDER BY nome";
-        PreparedStatement ps = null;
-        try {
-            Connection conn = Conexao.getConexao();
-            ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            if( rs != null){
-                while ( rs.next()) {
-                    Genero gen = new Genero();
-                    gen.id = rs.getInt(1);
-                    gen.nome = rs.getString(2);
-                    lista.add(gen);
-                }
+            // Obtém o ID gerado automaticamente
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1); // Retorna o ID do gênero cadastrado
             }
-            //Conexao.fecharConn( conn );
+            JOptionPane.showMessageDialog(null, "Gênero cadastrado com sucesso!");
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e.toString());
+            JOptionPane.showMessageDialog(null, "Erro ao cadastrar gênero: " + e.getMessage());
+        }
+        return -1; // Retorna -1 se ocorrer algum erro
+    }
+
+    // Método para obter a lista de gêneros
+    public static List<Genero> getGeneros() {
+        List<Genero> lista = new ArrayList<>();
+        String sql = "SELECT id, nome FROM genero ORDER BY nome";
+        try (Connection conn = Conexao.getConexao();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Genero genero = new Genero();
+                genero.id = rs.getInt("id");
+                genero.nome = rs.getString("nome");
+                lista.add(genero);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao obter gêneros: " + e.getMessage());
         }
         return lista;
     }
-    
-}
 
+    public static String verificarOuCadastrar() {
+        List<Genero> generos = getGeneros();
+    
+        if (generos.isEmpty()) {
+            int opcaoCadastro = JOptionPane.showConfirmDialog(null,
+                    "Não há gêneros cadastrados. Deseja cadastrar um novo gênero?",
+                    "Cadastro de Gênero", JOptionPane.YES_NO_OPTION);
+    
+            if (opcaoCadastro == JOptionPane.YES_OPTION) {
+                String nomeGenero = JOptionPane.showInputDialog("Digite o nome do novo gênero:");
+                if (nomeGenero != null && !nomeGenero.isEmpty()) {
+                    int idGenero = cadastrar(nomeGenero); // Cadastra o novo gênero e retorna o ID
+                    return String.valueOf(idGenero); // Retorna o ID do gênero cadastrado como String
+                } else {
+                    JOptionPane.showMessageDialog(null, "Nome do gênero não pode ser vazio.");
+                    return null; // Retorna null se o nome do gênero for vazio
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Operação cancelada.");
+                return null; // Retorna null se o usuário não deseja cadastrar um novo gênero
+            }
+        } else {
+            // Usuário escolhe o gênero existente
+            Genero escolhido = escolherGenero(generos);
+            if (escolhido != null) {
+                return String.valueOf(escolhido.id); // Retorna o ID do gênero escolhido como String
+            } else {
+                return null; // Retorna null se o usuário cancelar a escolha
+            }
+        }
+    }
+
+    // Método para escolher um gênero existente
+    private static Genero escolherGenero(List<Genero> generos) {
+        if (generos.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Não há gêneros cadastrados.");
+            return null; // Retorna null se não houver gêneros cadastrados
+        }
+
+        String[] opcoes = generos.stream().map(g -> g.nome).toArray(String[]::new);
+
+        String escolha = (String) JOptionPane.showInputDialog(null,
+                "Escolha um gênero:",
+                "Escolha de Gênero",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opcoes,
+                opcoes[0]);
+
+        // Encontra o gênero escolhido
+        for (Genero genero : generos) {
+            if (genero.nome.equalsIgnoreCase(escolha)) {
+                return genero; // Retorna o gênero escolhido
+            }
+        }
+
+        return null; // Retorna null se o usuário cancelar a escolha
+    }
+
+    // Método para obter a lista de nomes de gêneros
+    public static List<String> obterNomesGeneros() {
+        List<String> lista = new ArrayList<>();
+        String sql = "SELECT nome FROM genero ORDER BY nome";
+        try (Connection conn = Conexao.getConexao();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(rs.getString("nome"));
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao obter gêneros: " + e.getMessage());
+        }
+        return lista;
+    }
+}
