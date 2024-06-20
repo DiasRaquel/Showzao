@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class Conexao {
-    private static final String url = "jdbc:mysql://localhost:3306/loja";
+    private static final String url = "jdbc:mysql://localhost:3306/showzao";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
@@ -16,7 +16,6 @@ public class Conexao {
     public static Connection getConexao(){
         try {
             if( conn == null){
-          //      Class.forName("com.mysql.cj.jdbc.Driver");
                 conn = DriverManager.getConnection(url, USER, PASSWORD);
                 if(conn != null){
                     return conn;

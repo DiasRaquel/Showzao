@@ -1,120 +1,123 @@
 package view;
 
-import model.Categoria;
-import model.Cidade;
-import model.Cliente;
-import model.ClienteFisico;
-import model.ClienteJuridico;
-import model.Pedido;
-import model.Produto;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
+import model.Genero;
+import model.Local;
+import model.Show;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        System.out.println("Projeto Loja");
     
+        List<Genero> generos = Genero.getGenero();
+        List<Local> locais = Local.getLocal();
 
-        Cidade c1 = new Cidade();
-        Cidade c2 = new Cidade("Porto Alegre");
-        Cidade c3 = new Cidade(1,"Rio de Janeiro");
+        int opcao = -1;
+        do {
+            opcao = Menu();
+            switch (opcao) {
+                case 1:
+                    mostrarTodosOsShows();
+                    break;
+                case 2:
+                    // Pesquisar shows por gênero
+                    break;
+                case 3:
+                    menuCadastro(); // Abre o menu de cadastro
+                    break;
+                case 0:
+                    JOptionPane.showMessageDialog(null, "Saindo do programa.");
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Digite uma das opções!");
+                    break;
+            }
+        } while (opcao != 0);
+    }
 
-        System.out.println("Cidade c1: " + c1.nome);
-        System.out.println("Cidade c2: " + c2.nome);
-        System.out.println("Cidade c3: " + c3.nome);
-    
-        Cliente cli01 = new Cliente();
-        cli01.nome = "João";
-        // cli01.altura = 1.75;
-        // cli01.casado = true;
-        cli01.cidade = c2;
-
-        Cliente cli02 = new Cliente("Maria");
-        // cli02.altura = 1.80;
-        // cli02.casado = false;
-        cli02.cidade = c3;
-
-        Cliente cli03 = new Cliente(1, "Jose", "Rua A, nº100", c3);
-        
-        Cliente cli04 = new Cliente(2, "Carlos", "Rua B, nº200", new Cidade("Tangamandápio"));
-
-        cli03.cidade = cli04.cidade;
-
-        System.out.println("Nome de cliente: " + cli04.nome);
-        System.out.println("Cidade de cliente: " + cli04.cidade.nome);
-        
-        System.out.println(c3);
-
-        Cidade[] cidades = {c1,c2,c3};
-
-        System.out.println("Cidades");
-        for (Cidade cid : cidades) {
-            System.out.println(cid.nome);
-            
+    public static void mostrarTodosOsShows() {
+        List<Show> shows = Show.getShows();
+        if (shows.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Não há shows cadastrados.");
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Lista de Shows:\n");
+            for (Show show : shows) {
+                sb.append("ID: ").append(show.id)
+                  .append(", Nome: ").append(show.nome)
+                  .append(", Data: ").append(show.data)
+                  .append(", Gênero: ").append(show.genero)
+                  .append(", Local: ").append(show.local)
+                  .append(", Link: ").append(show.link)
+                  .append("\n");
+            }
+            JOptionPane.showMessageDialog(null, sb.toString());
         }
+    }
 
-        System.out.println("--- 23/04/2024--------------------------------");
-        System.out.println( "Nome da cidade: " + c3.nome );
-        System.out.println("-----------------------------------");
-        System.out.println( c3 );
+    public static int Menu() {
+        String texto = "Showzão\nTodos seus shows em um só lugar!\n\n" +
+                        "1 - Mostrar Shows\n" +
+                        "2 - Pesquisar Show\n" +
+                        "3 - Cadastrar\n" +
+                        "0 - Sair\n" +
+                        "\nDigite uma opção!";
 
-        ClienteFisico pf1 = new ClienteFisico();
-        pf1.nome = "Adalto";
-        pf1.cidade = c2;
-        System.out.println( "Nome do Cliente PF1: "+pf1.nome );
+        int opcao = -1;
+        String opcaoDigitada = JOptionPane.showInputDialog(texto);
+        if (opcaoDigitada != null && !opcaoDigitada.isEmpty()) {
+            opcao = Integer.valueOf(opcaoDigitada);
+        }
+        return opcao;
+    }
 
-        ClienteFisico pf2 = new ClienteFisico("Luis", "000.111.222-33");
-        System.out.println( "Nome do Cliente PF2: "+pf2.nome );
+    public static void menuCadastro() {
+        int opcao;
+        do {
+            opcao = MenuCadastro();
+            switch (opcao) {
+                case 1:
+                    Show.cadastrarShow();
+                    break;
+                case 2:
+                    // Cadastrar gênero
+                    // Exemplo: cadastrarGenero();
+                    break;
+                case 3:
+                    cadastrarLocal();
+                    break;
+                case 0:
+                    JOptionPane.showMessageDialog(null, "Voltando para o menu principal.");
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Digite uma das opções!");
+                    break;
+            }
+        } while (opcao != 0);
+    }
 
-        System.out.println("----------------PF3-------------------");
-        ClienteFisico pf3 = new ClienteFisico(1, "Juan", "Rua B - 200", c3, "999.111.222-33", 1.75 , true);
-        System.out.println( "Nome do Cliente PF3: "+pf3.nome );
-        
-        System.out.println("----------------PJ1-------------------");
+    public static int MenuCadastro() {
+        String texto = "Showzão - Cadastro\n\n" +
+                        "1 - Cadastrar Show\n" +
+                        "2 - Cadastrar Gênero\n" +
+                        "3 - Cadastrar Local\n" +
+                        "0 - Voltar\n" +
+                        "\nDigite uma opção!";
 
-        ClienteJuridico pj1 = new ClienteJuridico();
-        pj1.nome = "Mercearia do Seu Manoel";
-        pj1.cnpj = "00.111.222/0001-33";
-        pj1.endereco = "Rua C, 300";
-        pj1.cidade = c2;
-        System.out.println(pj1);
-    
-        ClienteJuridico pj2 = new ClienteJuridico();
-        pj2.cidade = c2;
-        System.out.println(pj2);
+        int opcao = -1;
+        String opcaoDigitada = JOptionPane.showInputDialog(texto);
+        if (opcaoDigitada != null && !opcaoDigitada.isEmpty()) {
+            opcao = Integer.valueOf(opcaoDigitada);
+        }
+        return opcao;
+    }
 
-
-
-
-        // 30/04/2024
-
-        Categoria cat01 = new Categoria(1, "Bebidas");
-        Categoria cat02 = new Categoria(2, "Alimentos");
-
-        Produto prod01 = new Produto("Coca-cola");
-        prod01.preco = 8.99;
-        prod01.quantidade =100;
-        prod01.categoria = cat01;
-
-        Produto prod2 = new Produto("Pepsi", 7.65, 50, cat01);
-        
-        Produto prod3 = new Produto("Arroz",4.99 , 80, cat02);
-        
-        Pedido ped01 = new Pedido("Rua A,150", pf1);
-        System.out.println("\n --- 30/04/2024 ---------");
-        ped01.imprimirPedido();
-    
-       // ped01.addProduto(prod01);
-        ped01.imprimirPedido();
-
-        //ped01.addProduto( new Produto[]{prod2,prod3});
-        ped01.addProduto( prod01,prod2,prod3);
-        ped01.imprimirPedido();
-
-        System.out.println("---- Modificadores e Acessores -----");
-        //ped01.totalPedido = 1000;
-        ped01.setTotalPedido(10);
-        System.out.println("Total do Pedido: " + ped01.getTotalPedido() );
-
-        System.out.println("\nTaxa de entrega: " + Pedido.TAXA_DE_ENTREGA);
-
+    public static void cadastrarLocal() {
+        String nomeLocal = Local.verificarOuCadastrar();
+        if (nomeLocal != null && !nomeLocal.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Local cadastrado: " + nomeLocal);
+        }
     }
 }
