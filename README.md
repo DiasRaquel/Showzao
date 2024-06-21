@@ -1,18 +1,63 @@
-## Getting Started
+# Showzão
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Showzão é uma aplicação Java para gerenciar shows, permitindo aos usuários visualizar, cadastrar e pesquisar shows por gênero.
 
-## Folder Structure
+## Funcionalidades
 
-The workspace contains two folders by default, where:
+Mostrar Todos os Shows: Visualize todos os shows cadastrados.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+Pesquisar por Gênero: Busque shows específicos filtrando por gênero.
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+Cadastro de Shows: Adicione novos shows ao banco de dados.
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+Cadastro de Gêneros: Registre novos gêneros de shows.
 
-## Dependency Management
+Cadastro de Locais: Cadastre novos locais onde os shows podem ocorrer.
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## Pré-requisitos
+
+JDK 8 ou superior
+
+MySQL (ou outro banco de dados compatível)
+
+# Instalação e Configuração
+
+```bash
+git clone https://github.com/seu-usuario/showzao.git
+```
+
+## Estrutura do Projeto
+
+```css
+showzao/
+│
+├── src/
+│   ├── dao/
+│   │   └── Conexao.java
+│   ├── model/
+│   │   ├── Genero.java
+│   │   ├── Local.java
+│   │   └── Show.java
+│   └── view/
+│       └── Main.java
+│
+├── database.sql
+└── README.md
+```
+
+## Contribuição
+Contribuições são bem-vindas! Se deseja melhorar o Showzão, siga estas etapas:
+
+Fork o projeto
+
+Crie um branch (git checkout -b feature/nova-feature)
+
+Commit suas mudanças (git commit -am 'Adiciona nova feature')
+
+Push para o branch (git push origin feature/nova-feature)
+
+Abra um Pull Request
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
