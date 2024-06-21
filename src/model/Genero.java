@@ -88,12 +88,36 @@ public class Genero {
                 return null; // Retorna null se o usuário não deseja cadastrar um novo gênero
             }
         } else {
-            // Usuário escolhe o gênero existente
-            Genero escolhido = escolherGenero(generos);
-            if (escolhido != null) {
-                return String.valueOf(escolhido.id); // Retorna o ID do gênero escolhido como String
+            // Oferece ao usuário a escolha entre cadastrar um novo gênero ou escolher um existente
+            String[] opcoes = { "Escolher Gênero Existente", "Cadastrar Novo Gênero" };
+            int escolha = JOptionPane.showOptionDialog(null,
+                    "Escolha uma opção:",
+                    "Opções de Gênero",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    opcoes,
+                    opcoes[0]);
+    
+            if (escolha == 0) { // Escolher Gênero Existente
+                Genero escolhido = escolherGenero(generos);
+                if (escolhido != null) {
+                    return String.valueOf(escolhido.id); // Retorna o ID do gênero escolhido como String
+                } else {
+                    return null; // Retorna null se o usuário cancelar a escolha
+                }
+            } else if (escolha == 1) { // Cadastrar Novo Gênero
+                String nomeGenero = JOptionPane.showInputDialog("Digite o nome do novo gênero:");
+                if (nomeGenero != null && !nomeGenero.isEmpty()) {
+                    int idGenero = cadastrar(nomeGenero); // Cadastra o novo gênero e retorna o ID
+                    return String.valueOf(idGenero); // Retorna o ID do gênero cadastrado como String
+                } else {
+                    JOptionPane.showMessageDialog(null, "Nome do gênero não pode ser vazio.");
+                    return null; // Retorna null se o nome do gênero for vazio
+                }
             } else {
-                return null; // Retorna null se o usuário cancelar a escolha
+                JOptionPane.showMessageDialog(null, "Operação cancelada.");
+                return null; // Retorna null se o usuário cancelar a operação
             }
         }
     }
@@ -125,21 +149,4 @@ public class Genero {
         return null; // Retorna null se o usuário cancelar a escolha
     }
 
-    // Método para obter a lista de nomes de gêneros
-    public static List<String> obterNomesGeneros() {
-        List<String> lista = new ArrayList<>();
-        String sql = "SELECT nome FROM genero ORDER BY nome";
-        try (Connection conn = Conexao.getConexao();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                lista.add(rs.getString("nome"));
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao obter gêneros: " + e.getMessage());
-        }
-        return lista;
-    }
 }

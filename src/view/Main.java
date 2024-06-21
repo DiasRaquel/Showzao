@@ -1,7 +1,5 @@
 package view;
 
-import java.util.List;
-
 import javax.swing.JOptionPane;
 
 import model.Genero;
@@ -11,9 +9,7 @@ import model.Show;
 public class Main {
     public static void main(String[] args) throws Exception {
     
-        List<Genero> generos = Genero.getGeneros();
-        List<Local> locais = Local.getLocais();
-
+        
         int opcao = -1;
         do {
             opcao = Menu();
