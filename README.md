@@ -20,11 +20,6 @@ JDK 8 ou superior
 
 MySQL (ou outro banco de dados compatível)
 
-# Instalação e Configuração
-
-```bash
-git clone https://github.com/seu-usuario/showzao.git
-```
 
 ## Estrutura do Projeto
 
