@@ -1,24 +1,26 @@
 package model;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+//Imports necessarios para operaçoes com Bando de dados e manipulação de coleções
+import java.sql.Connection; //Faz a conexão com o Bando de Dados
+import java.sql.PreparedStatement;//Executa consultas SQL 
+import java.sql.ResultSet;//Armazera os resultados das consultas SQL
+import java.sql.SQLException;//Faz o tratamento das exceções relacionada ao Banco de Dados
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import dao.Conexao;
+import dao.Conexao;//Importa a classe que faz a conexão com o Banco de Dados
 
 public class Show {
 
-    public int id;
-    public int codGenero;
-    public int codLocal;
+    //Variaveis da classe que representam os atributos dos shows
+    public int id;//Identificador unico do show
+    public int codGenero;//Codigo do genero associado ao show
+    public int codLocal;//Codigo do local associado ao show
     public String nome;
     public String data;
-    public String link;
+    public String link;//Link associado a venda do ingresso do show
 
     // Construtor vazio
     public Show() {
@@ -36,12 +38,13 @@ public class Show {
 
     // Método estático para obter todos os shows do banco de dados
     public static List<Show> getShows() {
-        List<Show> lista = new ArrayList<>();
+        List<Show> lista = new ArrayList<>();//Aqui é criado uma lista para armazenar os shows que estão cadastrados no banco de dados
         String sql = "SELECT id, nome, data, codGenero, codLocal, link FROM shows ORDER BY nome";
         try (Connection conn = Conexao.getConexao();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
+            //Esse laço de repetição extrai e itera as informaçoes dos shows
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String nome = rs.getString("nome");
@@ -49,14 +52,16 @@ public class Show {
                 int codGenero = rs.getInt("codGenero");
                 int codLocal = rs.getInt("codLocal");
                 String link = rs.getString("link");
-
+                
+                //Usando esse construtor, é criado um novo objeto com os dados extraidos
                 Show show = new Show(id, nome, data, codGenero, codLocal, link);
-                lista.add(show);
+                lista.add(show);//E depois é adicionado na lista onde estão todos os shows
             }
         } catch (SQLException e) {
+            //Trata e exceção se tiver algum erro e informa por uma mensagem.
             JOptionPane.showMessageDialog(null, "Erro ao obter shows: " + e.getMessage());
         }
-        return lista;
+        return lista;//Retorna a lista de shows recuperados do banco de dados
     }
 
     // Método estático para cadastrar um novo show
@@ -107,26 +112,29 @@ public class Show {
         }
     }
 
+    //Metodo para montar e formatar uma String com um show e seus detalhes
     public static String montarStringShows() {
         List<Show> shows = getShows(); // Obtemos a lista de shows diretamente
         List<Genero> generos = Genero.getGeneros();
         List<Local> locais = Local.getLocais();
     
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();//Stringbuilder usado para formatar as informaçoes
         for (Show show : shows) {
-            // Obter o nome do gênero e local pelo ID
+            // Obter o nome do gênero ID
             String nomeGenero = generos.stream()
-                    .filter(g -> g.id == show.codGenero)
-                    .map(g -> g.nome)
-                    .findFirst()
-                    .orElse("Desconhecido");
+                    .filter(g -> g.id == show.codGenero)//Filtra os generos pelo ID do show
+                    .map(g -> g.nome)//Mapeia para o nome do genero
+                    .findFirst()//Obtem o primeiro genero que o fitro encontra
+                    .orElse("Desconhecido");//Caso nao encontre, retorna essa mensagem
     
+            //Obter o nome do local pelo ID
             String nomeLocal = locais.stream()
                     .filter(l -> l.id == show.codLocal)
                     .map(l -> l.nome)
                     .findFirst()
                     .orElse("Desconhecido");
     
+            //Aqui é onde a formatação é feita
             // Linha 1: Nome do show e local
             sb.append(show.nome).append(" - ").append(nomeLocal).append("\n");
     
@@ -142,27 +150,31 @@ public class Show {
         return sb.toString();
     }
 
+    //Esse metodo funciona semelhante ao metodo anterios, a diferença é que ele 
+    //Filtra os shows pelo genero selecionado no metodo pesquisarPorGenero na classe Main
     public static String montarStringShowsPorGenero(int idGenero) {
-        List<Show> shows = getShows(); // Obtemos a lista de shows diretamente
+        List<Show> shows = getShows(); // Obtemos a lista de shows do banco de dados
         List<Genero> generos = Genero.getGeneros();
         List<Local> locais = Local.getLocais();
     
+        
         StringBuilder sb = new StringBuilder();
         for (Show show : shows) {
-            if (show.codGenero == idGenero) {
-                // Obter o nome do gênero e local pelo ID
+            if (show.codGenero == idGenero) { //Filtra os shows e retorna somente o genero selecionado
+                // Obter o nome do gênero pelo ID
                 String nomeGenero = generos.stream()
                         .filter(g -> g.id == show.codGenero)
                         .map(g -> g.nome)
                         .findFirst()
                         .orElse("Desconhecido");
-    
+                //Obtem o nome do local pelo ID
                 String nomeLocal = locais.stream()
                         .filter(l -> l.id == show.codLocal)
                         .map(l -> l.nome)
                         .findFirst()
                         .orElse("Desconhecido");
     
+                //Formatação da String
                 // Linha 1: Nome do show e local
                 sb.append(show.nome).append(" - ").append(nomeLocal).append("\n");
     
@@ -176,6 +188,7 @@ public class Show {
                 sb.append("\n");
             }
         }
+        //Retorna a String com o show formatado e filtrado pelo genero
         return sb.toString();
     }
 }

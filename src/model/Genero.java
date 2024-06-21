@@ -66,14 +66,17 @@ public class Genero {
         return lista;
     }
 
+    // Verifica se há gêneros cadastrados. Se não houver, oferece a opção de cadastrar um novo gênero.
+    // Se já houver gêneros cadastrados, permite ao usuário escolher entre um gênero existente ou cadastrar um novo.
+    // Retorna o ID do gênero escolhido ou cadastrado, ou null se a operação for cancelada.
     public static String verificarOuCadastrar() {
         List<Genero> generos = getGeneros();
-    
+
         if (generos.isEmpty()) {
             int opcaoCadastro = JOptionPane.showConfirmDialog(null,
                     "Não há gêneros cadastrados. Deseja cadastrar um novo gênero?",
                     "Cadastro de Gênero", JOptionPane.YES_NO_OPTION);
-    
+
             if (opcaoCadastro == JOptionPane.YES_OPTION) {
                 String nomeGenero = JOptionPane.showInputDialog("Digite o nome do novo gênero:");
                 if (nomeGenero != null && !nomeGenero.isEmpty()) {
@@ -98,7 +101,7 @@ public class Genero {
                     null,
                     opcoes,
                     opcoes[0]);
-    
+
             if (escolha == 0) { // Escolher Gênero Existente
                 Genero escolhido = escolherGenero(generos);
                 if (escolhido != null) {
@@ -122,30 +125,36 @@ public class Genero {
         }
     }
 
-    // Método para escolher um gênero existente
+    // Permite ao usuário escolher um gênero existente a partir da lista de gêneros cadastrados,
+    // obtida através do método verificarOuCadastrar.
     private static Genero escolherGenero(List<Genero> generos) {
+        // Verifica se há gêneros cadastrados
         if (generos.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Não há gêneros cadastrados.");
             return null; // Retorna null se não houver gêneros cadastrados
         }
-
-        String[] opcoes = generos.stream().map(g -> g.nome).toArray(String[]::new);
-
+    
+        // Converte a lista de Gêneros em um array com os nomes dos gêneros
+        String[] opcoes = generos.stream()
+                                .map(g -> g.nome)
+                                .toArray(String[]::new);
+    
+        // Mostra as opções de escolha de gênero
         String escolha = (String) JOptionPane.showInputDialog(null,
-                "Escolha um gênero:",
-                "Escolha de Gênero",
-                JOptionPane.QUESTION_MESSAGE,
+                "Escolha um gênero:", // Mensagem exibida no diálogo
+                "Escolha de Gênero", // Título da janela de diálogo
+                JOptionPane.QUESTION_MESSAGE, // Ícone de interrogação
                 null,
-                opcoes,
-                opcoes[0]);
-
-        // Encontra o gênero escolhido
+                opcoes, // Opções obtidas como array de nomes dos gêneros
+                opcoes[0]); // Valor padrão, primeiro elemento do array
+    
+        // Percorre a lista de gêneros para encontrar o gênero escolhido pelo usuário
         for (Genero genero : generos) {
-            if (genero.nome.equalsIgnoreCase(escolha)) {
-                return genero; // Retorna o gênero escolhido
+            if (genero.nome.equalsIgnoreCase(escolha)) { // Método equalsIgnoreCase permite ignorar maiúsculas/minúsculas
+                return genero; // Retorna o objeto Genero escolhido
             }
         }
-
+    
         return null; // Retorna null se o usuário cancelar a escolha
     }
 

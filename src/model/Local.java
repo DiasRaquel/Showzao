@@ -66,6 +66,10 @@ public class Local {
         return lista;
     }
 
+    
+    //Verifica se há locais cadastrados. Se não houver, oferece a opção de cadastrar um novo local.
+    //Se já houver locais cadastrados, permite ao usuário escolher entre um local existente ou cadastrar um novo.
+    //Retorna o ID do local escolhido ou cadastrado, ou null se a operação for cancelada.
     public static String verificarOuCadastrar() {
         List<Local> locais = getLocais();
     
@@ -122,27 +126,32 @@ public class Local {
         }
     }
 
-    // Método para escolher um local existente
+    //Permite ao usuário escolher um local existente a partir da lista de locais cadastrados,
+    //obtida através do método verificarOuCadastrar.
     private static Local escolherLocal(List<Local> locais) {
+        //Verifica se há locais cadastrados
         if (locais.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Não há locais cadastrados.");
             return null; // Retorna null se não houver locais cadastrados
         }
+        //Converte a lista Locais em um array com os nomes dos locais
+        String[] opcoes = locais.stream()//Cria uma stream a partir da lista Local
+                .map(l -> l.nome)//Usa map para transformar cada objeto em seu nome
+                .toArray(String[]::new);//Converte a stream em um array de Strings
 
-        String[] opcoes = locais.stream().map(l -> l.nome).toArray(String[]::new);
-
+        //Mostra as opçoes de escolha de local
         String escolha = (String) JOptionPane.showInputDialog(null,
-                "Escolha um local:",
-                "Escolha de Local",
-                JOptionPane.QUESTION_MESSAGE,
+                "Escolha um local:",//Mensagem exibida no dialogo
+                "Escolha de Local",//Titulo da janela de dialogo
+                JOptionPane.QUESTION_MESSAGE,//Icone de interrogação
                 null,
-                opcoes,
-                opcoes[0]);
+                opcoes,//Opções obtidas como array de nomes dos locais
+                opcoes[0]);//Valor padrão, primeiro elemento do array
 
-        // Encontra o local escolhido
+        //Percorre a lista de locais para achar a escolha do usuario
         for (Local local : locais) {
-            if (local.nome.equalsIgnoreCase(escolha)) {
-                return local; // Retorna o local escolhido
+            if (local.nome.equalsIgnoreCase(escolha)) { //Esse metodo equalsIgnoreCase permite ignorar Maiuscula/minuscula
+                return local; // Retorna o objeto Local escolhido
             }
         }
 
