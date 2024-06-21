@@ -1,5 +1,7 @@
 package view;
 
+import java.util.List;
+
 import javax.swing.JOptionPane;
 
 import model.Genero;
@@ -18,7 +20,7 @@ public class Main {
                     mostrarTodosOsShows();
                     break;
                 case 2:
-                    // Pesquisar shows por gênero
+                    pesquisarPorGenero();
                     break;
                 case 3:
                     menuCadastro(); 
@@ -41,6 +43,42 @@ public class Main {
             JOptionPane.showMessageDialog(null, listaShows);
         }
     }
+
+    public static void pesquisarPorGenero() {
+    List<Genero> generos = Genero.getGeneros();
+    
+    // Criar lista de opções para o JOptionPane
+    String[] opcoes = new String[generos.size()];
+    for (int i = 0; i < generos.size(); i++) {
+        opcoes[i] = generos.get(i).nome;
+    }
+    
+    // Mostrar diálogo para escolha do gênero
+    String escolha = (String) JOptionPane.showInputDialog(null,
+            "Escolha um gênero:",
+            "Pesquisar por Gênero",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            opcoes,
+            opcoes[0]);
+    
+    // Encontrar o ID do gênero escolhido
+    int idGeneroEscolhido = -1;
+    for (Genero genero : generos) {
+        if (genero.nome.equalsIgnoreCase(escolha)) {
+            idGeneroEscolhido = genero.id;
+            break;
+        }
+    }
+    
+    // Mostrar apenas os shows do gênero escolhido
+    String listaShows = Show.montarStringShowsPorGenero(idGeneroEscolhido);
+    if (listaShows.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Não há shows cadastrados para este gênero.");
+    } else {
+        JOptionPane.showMessageDialog(null, listaShows);
+    }
+}
 
     public static int Menu() {
         String texto = "Showzão\nTodos seus shows em um só lugar!\n\n" +

@@ -141,4 +141,41 @@ public class Show {
         }
         return sb.toString();
     }
+
+    public static String montarStringShowsPorGenero(int idGenero) {
+        List<Show> shows = getShows(); // Obtemos a lista de shows diretamente
+        List<Genero> generos = Genero.getGeneros();
+        List<Local> locais = Local.getLocais();
+    
+        StringBuilder sb = new StringBuilder();
+        for (Show show : shows) {
+            if (show.codGenero == idGenero) {
+                // Obter o nome do gênero e local pelo ID
+                String nomeGenero = generos.stream()
+                        .filter(g -> g.id == show.codGenero)
+                        .map(g -> g.nome)
+                        .findFirst()
+                        .orElse("Desconhecido");
+    
+                String nomeLocal = locais.stream()
+                        .filter(l -> l.id == show.codLocal)
+                        .map(l -> l.nome)
+                        .findFirst()
+                        .orElse("Desconhecido");
+    
+                // Linha 1: Nome do show e local
+                sb.append(show.nome).append(" - ").append(nomeLocal).append("\n");
+    
+                // Linha 2: Data do show e gênero
+                sb.append(show.data).append(" - ").append(nomeGenero).append("\n");
+    
+                // Linha 3: Link completo
+                sb.append(show.link).append("\n");
+    
+                // Linha em branco para separar os shows
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
 }
