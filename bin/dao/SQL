@@ -25,6 +25,14 @@ CREATE TABLE shows (
     FOREIGN KEY (codLocal) REFERENCES local( id ) ,
     codGenero INT NOT NULL ,
     FOREIGN KEY (codGenero) REFERENCES genero( id) 
+    nomeArtista TEXT NOT NULL,
+    classificacaoIdade INT NOT NULL
 );
+
+CREATE TABLE categoriaIngresso (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT ,
+    nome VARCHAR(100) NOT NULL
+);
+
 
 /**

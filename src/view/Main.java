@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import model.CategoriaIngresso;
 import model.Genero;
 import model.Local;
 import model.Show;
@@ -114,6 +115,9 @@ public class Main {
                 case 3:
                     cadastrarLocal();
                     break;
+                case 4:
+                    cadastrarCategoriaIngresso();
+                    break;
                 case 0:
                     JOptionPane.showMessageDialog(null, "Voltando para o menu principal.");
                     break;
@@ -156,4 +160,12 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Genero cadastrado: " + nomeGenero);
         }
     }
+
+    public static void cadastrarCategoriaIngresso() {
+        String nomeCadastrarIngresso = CategoriaIngresso.verificarOuCadastrar();//Chama o metodo que verifica se ja tem o genero salvo e cadastra um novo
+        if (nomeCadastrarIngresso != null && !nomeCadastrarIngresso.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Categoria cadastrada: " + nomeCadastrarIngresso);
+        }
+    }
+    
 }

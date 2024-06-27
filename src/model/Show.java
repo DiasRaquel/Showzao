@@ -21,19 +21,23 @@ public class Show {
     public String nome;
     public String data;
     public String link;//Link associado a venda do ingresso do show
+    public String nomeArtista;
+    public String classificacaoIdade;
 
     // Construtor vazio
     public Show() {
     }
 
     // Construtor com todos os argumentos
-    public Show(int id, String nome, String data, int codGenero, int codLocal, String link) {
+    public Show(int id, String nome, String data, int codGenero, int codLocal, String link, String nomeArtista, String classificacaoIdade) {
         this.id = id;
         this.nome = nome;
         this.data = data;
         this.codGenero = codGenero;
         this.codLocal = codLocal;
         this.link = link;
+        this.nomeArtista = nomeArtista;
+        this.classificacaoIdade = classificacaoIdade;
     }
 
     // Método estático para obter todos os shows do banco de dados
@@ -52,9 +56,11 @@ public class Show {
                 int codGenero = rs.getInt("codGenero");
                 int codLocal = rs.getInt("codLocal");
                 String link = rs.getString("link");
+                String nomeArtista = rs.getString("nomeArtista");
+                String classificacaoIdade = rs.getString("classificacaoIdade");
                 
                 //Usando esse construtor, é criado um novo objeto com os dados extraidos
-                Show show = new Show(id, nome, data, codGenero, codLocal, link);
+                Show show = new Show(id, nome, data, codGenero, codLocal, link, nomeArtista, classificacaoIdade);
                 lista.add(show);//E depois é adicionado na lista onde estão todos os shows
             }
         } catch (SQLException e) {
@@ -87,8 +93,13 @@ public class Show {
 
         String link = JOptionPane.showInputDialog("Digite o link do show:");
 
+        String nomeArtista = JOptionPane.showInputDialog("Digite o nome do artista:");
+
+        String classificacaoIdade = JOptionPane.showInputDialog("Digite a idade:");
+
+
         // Cria um novo objeto Show com os dados fornecidos
-        Show show = new Show(0, nome, data, codGenero, codLocal, link);
+        Show show = new Show(0, nome, data, codGenero, codLocal, link, nomeArtista, classificacaoIdade);
 
         // Chama o método estático para cadastrar o show
         cadastrar(show);
@@ -104,6 +115,8 @@ public class Show {
             ps.setInt(3, show.codGenero);
             ps.setInt(4, show.codLocal);
             ps.setString(5, show.link);
+            ps.setString(6, show.nomeArtista);
+            ps.setString(7, show.classificacaoIdade);
             ps.executeUpdate();
 
             JOptionPane.showMessageDialog(null, "Show cadastrado com sucesso!");
@@ -143,6 +156,10 @@ public class Show {
     
             // Linha 3: Link completo
             sb.append(show.link).append("\n");
+
+            sb.append(show.nomeArtista).append("\n");
+
+            sb.append(show.classificacaoIdade).append("\n");
     
             // Linha em branco para separar os shows
             sb.append("\n");
@@ -183,7 +200,11 @@ public class Show {
     
                 // Linha 3: Link completo
                 sb.append(show.link).append("\n");
-    
+
+                sb.append(show.nomeArtista).append("\n");
+
+                sb.append(show.classificacaoIdade).append("\n");
+
                 // Linha em branco para separar os shows
                 sb.append("\n");
             }

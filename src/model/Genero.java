@@ -157,5 +157,4 @@ public class Genero {
     
         return null; // Retorna null se o usuário cancelar a escolha
     }
-
 }
