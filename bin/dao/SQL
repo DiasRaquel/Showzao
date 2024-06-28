@@ -22,11 +22,12 @@ CREATE TABLE shows (
     data TEXT NOT NULL ,
     link TEXT NOT NULL ,
     codLocal INT NOT NULL ,
-    FOREIGN KEY (codLocal) REFERENCES local( id ) ,
+    FOREIGN KEY (codLocal) REFERENCES local( id ),
     codGenero INT NOT NULL ,
-    FOREIGN KEY (codGenero) REFERENCES genero( id) 
+    FOREIGN KEY (codGenero) REFERENCES genero( id),
     nomeArtista TEXT NOT NULL,
-    classificacaoIdade INT NOT NULL
+    classificacaoIdade INT NOT NULL,
+    categoriaIngresso TEXT NOT NULL
 );
 
 CREATE TABLE categoriaIngresso (
